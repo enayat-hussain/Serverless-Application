@@ -1,0 +1,28 @@
+uplink:
+  handler: controller/thing.upLink
+  events:
+    - iot:
+        sql: "SELECT * as body FROM 'neptune-project/neptune-uplink'"
+        name: neptuneDatabaseRule
+        description: 'Rule for reading uplink messages, belonging to the neptune-poc project'
+  layers:
+    - { Ref: GeneralLayerLambdaLayer }
+
+downlink:
+  handler: controller/thing.downLink
+  events:
+    - http:
+        path: thing/downlink
+        method: post
+  layers:
+    - { Ref: GeneralLayerLambdaLayer }
+
+exportData:
+  handler: controller/thing.exportData
+  events:
+    - http:
+        path: thing/export
+        method: get
+  layers:
+    - { Ref: GeneralLayerLambdaLayer }
+      

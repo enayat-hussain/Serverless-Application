@@ -1,0 +1,14 @@
+Resources:
+  TimestreamDatabase:
+    Type: 'AWS::Timestream::Database'
+    Properties:
+      DatabaseName: 'neptune-project'
+
+  TimestreamTable:
+    Type: 'AWS::Timestream::Table'
+    Properties:
+      TableName: 'neptune-uplink'
+      DatabaseName: !Ref TimestreamDatabase
+      RetentionProperties:
+        MemoryStoreRetentionPeriodInHours: 24
+        MagneticStoreRetentionPeriodInDays: 7
