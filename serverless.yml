@@ -1,0 +1,52 @@
+service: neptune-poc-service
+
+frameworkVersion: '2 || 3'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - timestream:*
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - iot:Connect
+        - iot:Publish
+      Resource: '*'
+    - Effect: Allow
+      Action: iotwireless:SendDataToWirelessDevice
+      Resource: '*'
+package:
+  exclude:
+    - node_modules/**
+    - layers/**
+functions:
+  - ${file(routes/thing.yml)}
+
+resources:
+  - ${file(resources/timestream.yml)}
+layers:
+  GeneralLayer:
+    path: layers/generalLayer # required, path to layer contents on disk
+    name: nps-generalLayer # optional, Deployed Lambda layer name
+    description: Description of what the lambda layer does # optional, Description to publish to AWS
+    compatibleRuntimes: # optional, a list of runtimes this layer is compatible with
+      - nodejs14.x
+    package:
+      patterns:
+        - '!nodejs/exclude/**'
+plugins:
+  - serverless-offline
+  - serverless-plugin-split-stacks
+  - serverless-prune-plugin
+
+custom:
+  splitStacks:
+    nestedStackCount: 50
+    perFunction: false
+    perType: false
+    perGroupFunction: true
